@@ -1,7 +1,7 @@
 
 # 🔐 Keystroke Dynamics Authentication using Random Forest
 
-Sistem ini mengimplementasikan autentikasi berbasis **Keystroke Dynamics**—biometrik perilaku yang menganalisis pola mengetik pengguna—dengan menggunakan algoritma **Random Forest**. Proyek ini dikembangkan dalam konteks penelitian di **Security Laboratory, Telkom University**.
+Sistem ini mengimplementasikan autentikasi berbasis **Keystroke Dynamics**—biometrik perilaku yang menganalisis pola mengetik pengguna—dengan menggunakan algoritma **Random Forest**.
 
 > 📄 **Penjelasan lengkap:** *(Medium link akan dimasukkan di sini)*  
 
