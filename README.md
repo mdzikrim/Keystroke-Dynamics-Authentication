@@ -134,6 +134,5 @@ MIT License
 ## 👤 Pengembang
 Muhammad Dzikri Muqimulhaq  
 📧 muhamaddzikri2004@gmail.com  
-Telkom University — Security Laboratory
 
 > Mungkin terdapat beberapa kesalahan, akan diperbaiki secara berkala
