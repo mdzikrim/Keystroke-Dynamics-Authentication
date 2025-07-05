@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 30px; background: #f5f5f5; }
+    h1 { color: #333; }
+    table {
+      width: 100%; border-collapse: collapse; margin-top: 20px;
+      background: #fff; box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    }
+    th, td {
+      border: 1px solid #ccc; padding: 10px; text-align: center;
+    }
+    th { background: #4285f4; color: white; }
+    tr:nth-child(even) { background-color: #f9f9f9; }
+    button {
+      margin: 5px;
+      padding: 5px 10px;
+      background: #4285f4;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #3367d6;
+    }
+    #pageIndicator {
+      margin: 0 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Admin Dashboard</h1>
+
+  <h2>Log Login Terakhir</h2>
+  <div style="overflow-x:auto;">
+    <table id="loginStats">
+      <thead>
+        <tr>
+          <th>User ID</th>
+          <th>Status</th>
+          <th>Confidence</th>
+          <th>Similarity</th>
+          <th>Timestamp</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <div style="margin-top: 10px;">
+    <button onclick="prevPage()">⬅️</button>
+    <span id="pageIndicator">Page 1</span>
+    <button onclick="nextPage()">➡️</button>
+  </div>
+
+  <h2>Statistik Per User</h2>
+  <table id="userStats">
+    <thead>
+      <tr>
+        <th>User ID</th>
+        <th>Sampel</th>
+        <th>Login Sukses</th>
+        <th>Login Gagal</th>
+        <th>Avg Confidence</th>
+        <th>Model</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    let loginLogs = [];
+    let currentPage = 1;
+    const rowsPerPage = 10;
+
+    function renderLoginTable() {
+      const tbody = document.querySelector("#loginStats tbody");
+      tbody.innerHTML = '';
+
+      const start = (currentPage - 1) * rowsPerPage;
+      const end = start + rowsPerPage;
+      const pageData = loginLogs.slice(start, end);
+
+      pageData.forEach(row => {
+        const tr = document.createElement('tr');
+        const confidence = row.confidence !== undefined ? `${(row.confidence * 100).toFixed(2)}%` : 'N/A';
+        const similarity = row.similarity !== undefined ? `${(row.similarity * 100).toFixed(2)}%` : 'N/A';
+        const timestamp = row.timestamp ? new Date(row.timestamp).toLocaleString() : 'N/A';
+
+        tr.innerHTML = `
+          <td>${row.user_id}</td>
+          <td>${row.status}</td>
+          <td>${confidence}</td>
+          <td>${similarity}</td>
+          <td>${timestamp}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('pageIndicator').textContent = `Page ${currentPage}`;
+    }
+
+    function fetchLoginLogs() {
+      fetch('/admin/logins')
+        .then(res => res.json())
+        .then(data => {
+          loginLogs = data;
+          currentPage = 1;
+          renderLoginTable();
+        });
+    }
+
+    function nextPage() {
+      if ((currentPage * rowsPerPage) < loginLogs.length) {
+        currentPage++;
+        renderLoginTable();
+      }
+    }
+
+    function prevPage() {
+      if (currentPage > 1) {
+        currentPage--;
+        renderLoginTable();
+      }
+    }
+
+    function fetchUserStats() {
+      fetch('/admin/user_stats')
+        .then(res => res.json())
+        .then(data => {
+          const tbody = document.querySelector("#userStats tbody");
+          tbody.innerHTML = '';
+          data.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td>${row.user_id}</td>
+              <td>${row.samples}</td>
+              <td>${row.login_success}</td>
+              <td>${row.login_fail}</td>
+              <td>${(row.avg_confidence * 100).toFixed(2)}%</td>
+              <td>${row.model_exists ? '✅' : '❌'}</td>
+            `;
+            tbody.appendChild(tr);
+          });
+        });
+    }
+
+    window.onload = function () {
+      fetchLoginLogs();
+      fetchUserStats();
+    };
+  </script>
+</body>
+</html>
